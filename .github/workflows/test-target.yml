@@ -20,4 +20,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Show selected environment
-        run: echo "Selected environment: ${{ inputs.environment }}"
+        run: 'echo "Selected environment: ${{ inputs.environment }}"'
