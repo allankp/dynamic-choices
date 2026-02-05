@@ -1,9 +1,12 @@
 import * as core from '@actions/core';
+import * as github from '@actions/github';
 import * as yaml from 'yaml';
 import type { ActionType } from './inputs';
 
+type Octokit = ReturnType<typeof github.getOctokit>;
+
 interface UpdateOptions {
-  octokit: ReturnType<typeof import('@actions/github').getOctokit>;
+  octokit: Octokit;
   owner: string;
   repo: string;
   action: ActionType;
@@ -47,14 +50,16 @@ export async function updateWorkflowChoices(options: UpdateOptions): Promise<Upd
 
     try {
       // Get current workflow file content
-      const { data: fileData } = await octokit.rest.repos.getContent({
+      const response = await octokit.rest.repos.getContent({
         owner,
         repo,
         path: workflowPath,
         ref: branch,
       });
 
-      if (!('content' in fileData)) {
+      const fileData = response.data as { content?: string; sha: string };
+
+      if (!fileData.content) {
         core.warning(`${workflowFile} is not a file, skipping`);
         continue;
       }
