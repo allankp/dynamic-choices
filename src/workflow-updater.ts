@@ -2,8 +2,11 @@ import * as core from '@actions/core';
 import * as yaml from 'yaml';
 import type { ActionType } from './inputs';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Octokit = any;
+
 interface UpdateOptions {
-  octokit: ReturnType<typeof import('@actions/github').getOctokit>;
+  octokit: Octokit;
   owner: string;
   repo: string;
   action: ActionType;
@@ -39,6 +42,7 @@ interface WorkflowContent {
 }
 
 export async function updateWorkflowChoices(options: UpdateOptions): Promise<UpdateResult> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { octokit, owner, repo, workflows, branch } = options;
   const updatedWorkflows: string[] = [];
 
@@ -47,14 +51,18 @@ export async function updateWorkflowChoices(options: UpdateOptions): Promise<Upd
 
     try {
       // Get current workflow file content
-      const { data: fileData } = await octokit.rest.repos.getContent({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const response = await octokit.rest.repos.getContent({
         owner,
         repo,
         path: workflowPath,
         ref: branch,
       });
 
-      if (!('content' in fileData)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const fileData = response.data as { content?: string; sha: string };
+
+      if (!fileData.content) {
         core.warning(`${workflowFile} is not a file, skipping`);
         continue;
       }
@@ -68,6 +76,7 @@ export async function updateWorkflowChoices(options: UpdateOptions): Promise<Upd
       }
 
       // Commit the updated workflow
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       await octokit.rest.repos.createOrUpdateFileContents({
         owner,
         repo,
