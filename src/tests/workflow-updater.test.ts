@@ -149,5 +149,39 @@ on:
 
       expect(result).toBe(stringInputWorkflow);
     });
+
+    it('should handle workflow with GitHub expression syntax', () => {
+      const workflowWithExpressions = `name: Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show env
+        run: echo "Deploying to \${{ inputs.environment }}"
+`;
+
+      const result = modifyWorkflowContent(workflowWithExpressions, {
+        action: 'add',
+        inputName: 'environment',
+        choiceValue: 'testing',
+      });
+
+      expect(result).toContain('testing');
+      expect(result).toContain('development');
+      expect(result).toContain('staging');
+      expect(result).toContain('production');
+    });
   });
 });
