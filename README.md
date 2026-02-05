@@ -11,7 +11,6 @@ A GitHub Action to dynamically add, update, or delete choices from `workflow_dis
 - **Update** existing choices to new values
 - **Delete** choices from workflow inputs
 - Supports updating multiple workflows at once
-- Preserves YAML formatting and comments
 
 ## Usage
 
