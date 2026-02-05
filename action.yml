@@ -1,0 +1,45 @@
+name: 'Dynamic Workflow Choices'
+description: 'Add, update, or delete choices from workflow_dispatch inputs in your repository workflows'
+author: 'Your Name'
+branding:
+  icon: 'edit-3'
+  color: 'blue'
+
+inputs:
+  action:
+    description: 'Action to perform: add, update, or delete'
+    required: true
+  input-name:
+    description: 'Name of the workflow input to modify'
+    required: true
+  workflows:
+    description: 'Comma-separated list of workflow files to update (e.g., "deploy.yml,release.yml")'
+    required: true
+  choice-value:
+    description: 'The choice value to add, update, or delete'
+    required: true
+  new-choice-value:
+    description: 'New value when using update action (replaces choice-value)'
+    required: false
+  github-token:
+    description: 'GitHub token with repo write permissions'
+    required: true
+    default: ${{ github.token }}
+  commit-message:
+    description: 'Custom commit message for the update'
+    required: false
+    default: 'chore: update workflow input choices'
+  branch:
+    description: 'Branch to commit changes to'
+    required: false
+    default: ${{ github.ref_name }}
+
+outputs:
+  updated-workflows:
+    description: 'List of workflows that were updated'
+  changes-made:
+    description: 'Whether any changes were made'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

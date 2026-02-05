@@ -1,0 +1,11 @@
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+
+# Check if dist/ has changed
+if ! git diff --quiet dist/; then
+  echo ""
+  echo "⚠️  dist/ has changed after build. Adding to commit..."
+  git add dist/
+fi
